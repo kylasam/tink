@@ -191,7 +191,7 @@ def main():
     print("Total number of Delta load is =",Delta_load)
 
     #Load the Delta Records into Master Table
-    #Master_Data_Load=db_perform_Master_load(initialze_db,initialze_conn,config.Master_data_table,config.Delta_data_table,config.Master_data_table_source_columns)
+    Master_Data_Load=db_perform_Master_load(initialze_db,initialze_conn,config.Master_data_table,config.Delta_data_table,config.Master_data_table_source_columns)
 
     #perform Downloading the report into a file and Email(If value passed from user console)
     execute_reporting=db_extract_databse(initialze_db,initialze_conn,config.Master_data_table,config.report_file)
