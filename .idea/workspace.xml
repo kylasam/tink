@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fe946b09-31e6-43cd-b681-967e4c74ec3f" name="Default" comment="" />
+    <list default="true" id="fe946b09-31e6-43cd-b681-967e4c74ec3f" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/bin/ETL_tink_Load_data_Master_Orders.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/ETL_tink_Load_data_Master_Orders.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,8 +19,8 @@
       <file leaf-file-name="ETL_tink_Load_data_Master_Orders.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bin/ETL_tink_Load_data_Master_Orders.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="211">
-              <caret line="166" column="66" lean-forward="true" selection-start-line="166" selection-start-column="66" selection-end-line="166" selection-end-column="66" />
+            <state relative-caret-position="22">
+              <caret line="193" column="4" selection-start-line="193" selection-start-column="4" selection-end-line="193" selection-end-column="4" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -51,6 +53,9 @@
       <find>Delta_load</find>
     </findStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -73,6 +78,7 @@
     <option name="width" value="1346" />
     <option name="height" value="728" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -84,16 +90,6 @@
             <path>
               <item name="tink" type="b2602c69:ProjectViewProjectNode" />
               <item name="tink" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="tink" type="b2602c69:ProjectViewProjectNode" />
-              <item name="tink" type="462c0819:PsiDirectoryNode" />
-              <item name="bin" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="tink" type="b2602c69:ProjectViewProjectNode" />
-              <item name="tink" type="462c0819:PsiDirectoryNode" />
-              <item name="plot" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -165,11 +161,11 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
       <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32931036" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32931036" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14787701" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14787701" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" x="0" y="23" width="1362" height="705" id="SciView" order="3" type="WINDOWED" weight="0.25475842" />
@@ -253,8 +249,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/bin/ETL_tink_Load_data_Master_Orders.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="166" column="66" lean-forward="true" selection-start-line="166" selection-start-column="66" selection-end-line="166" selection-end-column="66" />
+        <state relative-caret-position="22">
+          <caret line="193" column="4" selection-start-line="193" selection-start-column="4" selection-end-line="193" selection-end-column="4" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
