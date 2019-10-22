@@ -1,0 +1,3 @@
+customer_id,order_id,shop_id,order_mode,item,brand,order_value,timestampvalue,order_date
+4001,5001,6001,SHOP,Tape,CBS,56268.75,20191021081010,20191021
+4002,5002,6002,SHOP,Indicator,Nokia,56287.5,20191021061023,20191021
