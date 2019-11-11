@@ -27,9 +27,11 @@ def get_config_details(config_path):
           'log_path': config.get ('workspaces', 'log_path'),
           'plot_path' : config.get ('workspaces', 'plot_path'),
           'TargetDataDirectory' :config.get ('workspaces', 'TargetDataDirectory'),
+          'DataDirectory': config.get ('workspaces', 'DataDirectory'),
           'WALDirectory' :config.get ('workspaces', 'WALDirectory'),
           'Temp_File' :config.get ('workspaces', 'Temp_File'),
           'HTML_PATH' :config.get ('workspaces', 'HTML_PATH'),
+          'WAITTIME': config.get ('workspaces', 'WAITTIME'),
           'TIME_SPAN_BETWEEN_PUSHES' :config.get ('workspaces', 'TIME_SPAN_BETWEEN_PUSHES'),
           'DASHBOARD_REFRESH_TIME' :config.get ('workspaces', 'DASHBOARD_REFRESH_TIME'),
           'MOVE_TEMP_FILE_TO_OTHER_NAME_FOR_PROCESSING' :config.get ('workspaces', 'MOVE_TEMP_FILE_TO_OTHER_NAME_FOR_PROCESSING'),
@@ -58,32 +60,37 @@ sqlContext = pyspark.SQLContext(sc)
 def ETLProcessing(config):
     CURRENT_DATE = datetime.now ().strftime ('%Y%m%d')
     WAL_FILE_DIR = os.path.join (config.DataDirectory, os.path.join (config.WALDirectory))
-    WAl_FILE = config.WAL_FILE_DIR + CURRENT_DATE + '_WAL.dat'
+    WAl_FILE = WAL_FILE_DIR + CURRENT_DATE + '_WAL.dat'
     while True:
         with open(WAl_FILE) as Datawrites:
             LATEST_PUBLISHRECORD=(list (Datawrites)[-1]).replace("\n","")
             LATEST_PUBLISHRECORD_TIMESTAMP =LATEST_PUBLISHRECORD.split(":")[2]
             EDW_PUBLICATION_ID=(datetime.now ().strftime ('%Y%m%d%H%M%S'))
-            if(((datetime.strptime(EDW_PUBLICATION_ID,'%Y%m%d%H%M%S')-datetime.strptime(LATEST_PUBLISHRECORD_TIMESTAMP,'%Y%m%d%H%M%S')).seconds) < int(config.MOVE_TEMP_FILE_TO_OTHER_NAME_FOR_PROCESSING)):
+            print(datetime.strptime(EDW_PUBLICATION_ID,'%Y%m%d%H%M%S'),datetime.strptime(LATEST_PUBLISHRECORD_TIMESTAMP,'%Y%m%d%H%M%S'),int(config.MOVE_TEMP_FILE_TO_OTHER_NAME_FOR_PROCESSING))
+            if(((datetime.strptime(EDW_PUBLICATION_ID,'%Y%m%d%H%M%S')-datetime.strptime(LATEST_PUBLISHRECORD_TIMESTAMP,'%Y%m%d%H%M%S')).seconds) < int(config.MOVE_TEMP_FILE_TO_OTHER_NAME_FOR_PROCESSING) or ((datetime.strptime(EDW_PUBLICATION_ID,'%Y%m%d%H%M%S')-datetime.strptime(LATEST_PUBLISHRECORD_TIMESTAMP,'%Y%m%d%H%M%S')).seconds) > int(config.TIME_SPAN_BETWEEN_PUSHES)):
                 logging.info("Streaming process is running and data is still pushing into Kafka server")
                 print("Data Not Streaming...")
-                os.rename(config.Temp_File+ '/temp.txt',config.Temp_File+ '/toconsumenow.txt')
-                open (config.Temp_File+ '/temp.txt', 'w').close ()
+                if(os.stat(config.Temp_File + '/temp.txt').st_size == 0):
+                    print("No data has been streamed in the file. Quitting the ETL process..")
+                    logging.info("No data has been streamed in the file. Quitting the ETL process at" + EDW_PUBLICATION_ID)
+                else:
+                     os.rename(config.Temp_File + '/temp.txt',config.Temp_File + '/toconsumenow.txt')
+                     open (config.Temp_File + '/temp.txt', 'a').close ()
+                     ProcessDataFrame = sqlContext.read.json (config.Temp_File + '/toconsumenow.txt', schema=JSON_SCHEMA.MessageSchmea)
+                     ProcessDataFrame = ProcessDataFrame.withColumn ('Country_N', initcap (col ("country"))) \
+                                                            .withColumn ("Date_N", date_format (to_date (col ("date"), "dd/MM/yyyy"), "yyyy-MM-dd")) \
+                                                            .withColumn ("ip_address_N", ip_address_validat ("ip_address")).drop ("ip_address", "country", "date") \
+                                                            .withColumnRenamed ("Country_N", "Country").withColumnRenamed ("Date_N", "Date").withColumnRenamed ("ip_address_N", "ip_address")
+                     ProcessDataFrame.printSchema ()
+                     ProcessDataFrame.show ()
+                     TargetDirectory = config.TargetDataDirectory + "\CustomerData" + "_" + CURRENT_DATE + "\\"
 
-                ProcessDataFrame = sqlContext.read.json (config.Temp_File + '/toconsumenow.txt', schema=JSON_SCHEMA.MessageSchmea)
-                ProcessDataFrame = ProcessDataFrame.withColumn ('Country_N', initcap (col ("country"))) \
-                    .withColumn ("Date_N", date_format (to_date (col ("date"), "dd/MM/yyyy"), "yyyy-MM-dd")) \
-                    .withColumn ("ip_address_N", ip_address_validat ("ip_address")).drop ("ip_address", "country", "date") \
-                    .withColumnRenamed ("Country_N", "Country").withColumnRenamed ("Date_N", "Date").withColumnRenamed (
-                    "ip_address_N", "ip_address")
-                ProcessDataFrame.printSchema ()
-                ProcessDataFrame.show ()
-                TargetDirectory = config.TargetDataDirectory + "\CustomerData" + "_" + CURRENT_DATE + "\\"
-
-                ProcessDataFrame.coalesce (1).write.format ('json').mode ('append').save (TargetDirectory)
+                     #ProcessDataFrame.coalesce (1).write.format ('json').mode ('append').save (TargetDirectory)
+                     ProcessDataFrame.coalesce(1).write.format('json').mode('append').save(TargetDirectory)
+                     os.remove(config.Temp_File + '/toconsumenow.txt')
             else:
                 print("Data Streaming now. Waiting for few secs to try Renaming")
-                time.sleep(config.DASHBOARD_REFRESH_TIME)
+        time.sleep(int(config.WAITTIME))
 
 
 

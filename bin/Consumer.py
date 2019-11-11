@@ -3,18 +3,13 @@ from collections import namedtuple
 from datetime import datetime
 import logging
 import sys
-from kafka import KafkaConsumer
-from json import loads
-import os
-import json
-from pyspark.sql import SQLContext
-from pyspark.sql import SparkSession
-from pyspark import SparkContext, SparkConf
+from pyspark import SparkContext,SQLContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
-from pyspark.sql.functions import explode
-from pyspark.sql.functions import split
 
+import time
+import findspark
+findspark.init()
 CURRENT_DATE=datetime.now().strftime('%Y%m%d')
 LOG_FILE_NAME=datetime.now().strftime('../log/KafkaConsumerStreaming_%Y%m%d.log')
 logging.basicConfig(filename=LOG_FILE_NAME,
@@ -44,22 +39,22 @@ def get_config_details(config_path):
     return conf_contents
 
 
+
 def ConsumerMessages(config):
-    print("Cosuming")
-    sc = SparkContext (appName="PythonSparkStreamingKafka_RM_01")
+    sc = SparkContext (appName="PythonSparkStreamingConsumer",master="local[4]")
     sc.setLogLevel ("WARN")
-    ssc = StreamingContext (sc, 60)
-    kvs = KafkaUtils.createStream (ssc, 'localhost:9092', 'spark-streaming', {'KafkaSparkDataInestion': 1})
+    ssc = StreamingContext (sc, 1)
+    sqlContext = SQLContext (sc)
+    kvs = KafkaUtils.createDirectStream (ssc, [config.KAFKA_TOPIC_SPARK_PROCESSING], {"bootstrap.servers": "localhost:9092"})
     lines = kvs.map (lambda x: x[1])
     coords = lines.map (lambda line: line)
+    def saveCoord(rdd):
+        print("Processing the data.....")
+        rdd.foreach (lambda rec: open (config.Temp_File + '/temp.txt', "a").write (rec+ "\n"))
 
-    def SaverecordsinTempLocation(rdd):
-        rdd.foreach (
-            lambda rec: open ('C:\\Users\\user\\PycharmProjects\\KafkaDataStreaming\\data\\temp\\temp.txt', "a").write (
-                rec + "\n"))
-        print ("Rdd written to file")
-    coords.foreachRDD (SaverecordsinTempLocation)
+    coords.foreachRDD (saveCoord)
     coords.pprint ()
+
     ssc.start ()
     ssc.awaitTermination ()
 def main():
